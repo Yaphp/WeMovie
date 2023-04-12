@@ -1,0 +1,11 @@
+runtime/*
+.DS_Store
+config.json
+
+.idea/
+node_modules/
+build/
+uploads/
+!build/readme.md
+!uploads/readme.md
+dist/
