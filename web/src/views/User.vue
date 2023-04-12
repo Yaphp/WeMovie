@@ -303,18 +303,18 @@ export default {
         },
 
         // 根据ID删除对应的用户信息
-        async removeUserById(id) {
+        removeUserById(id) {
             // 弹框 询问用户是否删除
-            const confirmResult = await this.$confirm(
-                "此操作将永久删除该用户, 是否继续?",
-                "提示",
-                {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning",
-                }
-            ).catch((err) => err);
-
+            // const confirmResult = await this.$confirm(
+            //     "此操作将永久删除该用户, 是否继续?",
+            //     "提示",
+            //     {
+            //         confirmButtonText: "确定",
+            //         cancelButtonText: "取消",
+            //         type: "warning",
+            //     }
+            // ).catch((err) => err);
+            let confirmResult = "";
             // console.log(confirmResult)
             if (confirmResult == "confirm") {
                 //删除用户
@@ -344,18 +344,18 @@ export default {
         },
 
         //批量删除用户
-        async batchDeleteUser() {
+        batchDeleteUser() {
             // 弹框 询问用户是否删除
-            const confirmResult = await this.$confirm(
-                "此操作将永久删除用户, 是否继续?",
-                "提示",
-                {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning",
-                }
-            ).catch((err) => err);
-
+            // const confirmResult = await this.$confirm(
+            //     "此操作将永久删除用户, 是否继续?",
+            //     "提示",
+            //     {
+            //         confirmButtonText: "确定",
+            //         cancelButtonText: "取消",
+            //         type: "warning",
+            //     }
+            // ).catch((err) => err);
+            let confirmResult = "confirm";
             if (confirmResult === "confirm") {
                 //向被删除的ids赋值
                 this.multipleSelection.forEach((item) => {

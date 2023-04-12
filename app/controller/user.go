@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strings"
-	"web_standard/app/model"
-	"web_standard/app/utils"
+	"wemovie/app/model"
+	"wemovie/app/utils"
 )
 
 type UserController struct {

@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
-	"web_standard/app/model"
+	"wemovie/app/model"
 )
 
 type BaseController struct{}

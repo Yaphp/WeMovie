@@ -3,7 +3,7 @@ import {createStore} from 'vuex'
 export default createStore({
     state: {
         app: {
-            "name": "GoWebStandard",
+            "name": "WeMovie",
             "version": "1.0.0",
             "host": "http://" + window.location.hostname + ":80",
         },

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"strings"
 	"time"
-	"web_standard/app/utils"
+	"wemovie/app/utils"
 )
 
 type UploadController struct {

@@ -2,8 +2,8 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"web_standard/app/controller"
-	"web_standard/app/model"
+	"wemovie/app/controller"
+	"wemovie/app/model"
 )
 
 // Auth 验证token

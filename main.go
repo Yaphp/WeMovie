@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"web_standard/app/route"
-	"web_standard/app/utils"
+	"wemovie/app/route"
+	"wemovie/app/utils"
 )
 
 func main() {

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"time"
-	"web_standard/app/model"
+	"wemovie/app/model"
 )
 
 type LoginController struct {

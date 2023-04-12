@@ -1,4 +1,4 @@
-module web_standard
+module wemovie
 
 go 1.19
 
