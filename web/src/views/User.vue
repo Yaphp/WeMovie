@@ -64,7 +64,7 @@
                                 type="danger"
                                 size="small"
                                 :icon="Delete"
-                                @click="removeUserById(scope.row.id)"
+                                @click="deleteUserById(scope.row.id)"
                             >删除
                             </el-button>
                         </template>
@@ -302,8 +302,15 @@ export default {
                 });
         },
 
+        //批量选中事件处理
+        handleSelectionChange(val) {
+            console.log(val)
+            this.multipleSelection = val;
+        },
+
+
         // 根据ID删除对应的用户信息
-        removeUserById(id) {
+        deleteUserById(id) {
             // 弹框 询问用户是否删除
             // const confirmResult = await this.$confirm(
             //     "此操作将永久删除该用户, 是否继续?",
@@ -314,10 +321,11 @@ export default {
             //         type: "warning",
             //     }
             // ).catch((err) => err);
-            let confirmResult = "";
-            // console.log(confirmResult)
-            if (confirmResult == "confirm") {
-                //删除用户
+            this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
                 userDelete(id)
                     .then((res) => {
                         if (res.code === 200) {
@@ -334,30 +342,19 @@ export default {
                         this.$message.error("删除用户异常");
                         console.log(err);
                     });
-            }
-        },
-
-        //批量选中事件处理
-        handleSelectionChange(val) {
-            console.log(val)
-            this.multipleSelection = val;
+            }).catch(() => {
+            });
         },
 
         //批量删除用户
         batchDeleteUser() {
             // 弹框 询问用户是否删除
-            // const confirmResult = await this.$confirm(
-            //     "此操作将永久删除用户, 是否继续?",
-            //     "提示",
-            //     {
-            //         confirmButtonText: "确定",
-            //         cancelButtonText: "取消",
-            //         type: "warning",
-            //     }
-            // ).catch((err) => err);
-            let confirmResult = "confirm";
-            if (confirmResult === "confirm") {
-                //向被删除的ids赋值
+
+            this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
                 this.multipleSelection.forEach((item) => {
                     this.ids.push(item.id);
                 });
@@ -377,7 +374,8 @@ export default {
                         this.$message.error("批量删除用户异常");
                         console.log(err);
                     });
-            }
+            }).catch(() => {
+            });
         }
     },
 };
