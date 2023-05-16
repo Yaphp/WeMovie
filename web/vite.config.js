@@ -27,17 +27,16 @@ export default defineConfig({
     server: {
         cors: true, // 默认启用并允许任何源
         open: true, // 在服务器启动时自动在浏览器中打开应用程序
-        port: 8080,
-        //反向代理配置，注意rewrite写法
+        port: 8080, // 指定dev服务器端口
         proxy: {
             '^/api': {
-                target: 'https://127.0.0.1:5000',   //代理接口
+                target: 'https://127.0.0.1',   //代理接口
                 changeOrigin: true,
                 secure: false
                 // rewrite: (path) => path.replace(/^\/api/, '/v1')
             },
             '^/uploads': {
-                target: 'https://127.0.0.1:5000',   //代理资源
+                target: 'https://127.0.0.1',   //代理资源
                 changeOrigin: true,
                 secure: false
                 // rewrite: (path) => path.replace(/^\/api/, '/v1')

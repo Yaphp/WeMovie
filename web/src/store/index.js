@@ -5,7 +5,7 @@ export default createStore({
         app: {
             "name": "WeMovie",
             "version": "1.0.0",
-            "host": window.location.protocol + "://" + window.location.hostname + ":5000",
+            "host": window.location.protocol + "://" + window.location.hostname,
         },
         user: JSON.parse(sessionStorage.getItem("user")) || null,
         token: sessionStorage.getItem("token") || null,
