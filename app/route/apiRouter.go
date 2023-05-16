@@ -35,7 +35,7 @@ func Auth() gin.HandlerFunc {
 	}
 }
 
-// api路由
+// ApiRouter api路由
 func ApiRouter(r *gin.Engine) {
 	routerWithOutLogin := r.Group("/api")
 	{
@@ -51,5 +51,10 @@ func ApiRouter(r *gin.Engine) {
 		routerWithLogin.DELETE("/user", controller.UserController{}.Delete)
 		routerWithLogin.PUT("/user", controller.UserController{}.Update)
 		routerWithLogin.GET("/user", controller.UserController{}.Index)
+
+		routerWithLogin.POST("/file", controller.FileController{}.Add)
+		routerWithLogin.DELETE("/file", controller.FileController{}.Delete)
+		routerWithLogin.PUT("/file", controller.FileController{}.Update)
+		routerWithLogin.GET("/file", controller.FileController{}.Index)
 	}
 }

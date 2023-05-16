@@ -12,7 +12,7 @@ type BaseController struct{}
 // 成功返回
 func (con BaseController) Success(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, gin.H{
-		"code": 200,
+		"code": 0,
 		"msg":  "success",
 		"data": data,
 	})
@@ -21,7 +21,7 @@ func (con BaseController) Success(c *gin.Context, data interface{}) {
 // 错误返回
 func (con BaseController) Error(c *gin.Context, msg string) {
 	c.JSON(http.StatusOK, gin.H{
-		"code": 500,
+		"code": 1,
 		"msg":  msg,
 	})
 }

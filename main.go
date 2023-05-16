@@ -25,7 +25,7 @@ func main() {
 	} else {
 		// 服务启动后打开浏览器
 		//utils.Openurl("http://localhost:8080")
-		r.Use(static.Serve("/", static.LocalFile("./build/dist", false)))
+		r.Use(static.Serve("/", static.LocalFile("./dist", false)))
 	}
 
 	// 注册上传文件夹路径
@@ -35,11 +35,11 @@ func main() {
 	route.ApiRouter(r)
 
 	//输出服务地址
-	fmt.Println("Server is running at http://127.0.0.1")
+	fmt.Println("Server is running at https://127.0.0.1")
 
 	// tips: 服务启动后打开浏览器
 	fmt.Println("如果浏览器没有自动打开，请手动在浏览器中输入http://127.0.0.1访问")
 
 	//启动服务
-	r.Run(":80") // 监听并在 0.0.0.0:80 上启动服务
+	r.RunTLS(":443", "./server.crt", "./server.key") // 监听并在 https://0.0.0.0:443 上启动服务
 }

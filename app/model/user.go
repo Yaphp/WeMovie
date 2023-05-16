@@ -9,6 +9,7 @@ import (
 type User struct {
 	Id         int       `json:"id" gorm:"column:id;type:int(11);not null;primaryKey;autoIncrement"`
 	Username   string    `json:"username" gorm:"column:username;type:varchar(255);not null"`
+	Avatar     string    `json:"avatar" gorm:"column:avatar;type:varchar(255);not null"`
 	Phone      string    `json:"phone" gorm:"column:phone;type:varchar(11);not null"`
 	Email      string    `json:"email" gorm:"column:email;type:varchar(50);not null"`
 	Password   string    `json:"password" gorm:"column:password;type:varchar(255);not null"`

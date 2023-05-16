@@ -16,7 +16,11 @@ type UserController struct {
 func (con UserController) Add(c *gin.Context) {
 	user := model.User{}
 
-	c.ShouldBindJSON(&user)
+	err := c.ShouldBindJSON(&user)
+
+	if err != nil {
+		return
+	}
 
 	user.Password = utils.Md5(user.Password)
 
@@ -24,7 +28,7 @@ func (con UserController) Add(c *gin.Context) {
 
 	fmt.Println(user)
 
-	err := con.db().Create(&user).Error
+	err = con.db().Create(&user).Error
 
 	if err != nil {
 		con.Error(c, "添加失败")
