@@ -17,7 +17,10 @@ func main() {
 
 	// 不同模式设置静态文件目录
 	if gin.Mode() == "release" {
-		utils.Openurl("http://127.0.0.1")
+		err := utils.Openurl("http://127.0.0.1")
+		if err != nil {
+			return
+		}
 		r.Use(static.Serve("/", static.LocalFile("./dist", false)))
 	} else {
 		// 服务启动后打开浏览器
