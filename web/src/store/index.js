@@ -5,26 +5,44 @@ export default createStore({
         app: {
             "name": "WeMovie",
             "version": "1.0.0",
-            "host": "http://" + window.location.hostname + ":80",
+            "host": window.location.protocol + "://" + window.location.hostname + ":5000",
         },
-        user: JSON.parse(sessionStorage.getItem("user")) || {},
-        token: sessionStorage.getItem("token") || "",
+        user: JSON.parse(sessionStorage.getItem("user")) || null,
+        token: sessionStorage.getItem("token") || null,
         tabName: '首页',
-        adminMenuData: [
+        chunkSize: 1024 * 1024 * 10,
+        rootMenuData: [],
+        userMenuData: [
             {
                 entity: {
                     id: 0,
-                    name: "/index",
-                    icon: "el-icon-s-home",
-                    alias: "首页"
+                    name: "/files",
+                    icon: "document",
+                    alias: "文件"
                 }
             },
             {
                 entity: {
                     id: 1,
-                    name: "/user",
-                    icon: "el-icon-s-custom",
-                    alias: "用户管理"
+                    name: "/album",
+                    icon: "image",
+                    alias: "相册"
+                }
+            },
+            {
+                entity: {
+                    id: 2,
+                    name: "/favorite",
+                    icon: "heart",
+                    alias: "收藏夹"
+                }
+            },
+            {
+                entity: {
+                    id: 3,
+                    name: "/recycle",
+                    icon: "trash",
+                    alias: "回收站"
                 }
             }
         ]

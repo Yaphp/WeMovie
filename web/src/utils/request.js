@@ -5,11 +5,12 @@ import {ElMessage} from 'element-plus'
 // 创建一个 axios 实例
 const service = axios.create({
     baseURL: '/api', // 所有的请求地址前缀部分
-    timeout: 60000, // 请求超时时间毫秒
+    timeout: 0, // 请求超时时间毫秒 0 表示无超时时间
     withCredentials: true, // 异步请求携带cookie
     headers: {
-        // 设置后端需要的传参类型
-        'Content-Type': 'application/json',
+        // 设置后端需要的传参类型 传递表单数据
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json;charset=UTF-8',
         // 'token': sessionStorage.getItem('token'),
         'X-Requested-With': 'XMLHttpRequest',
     },

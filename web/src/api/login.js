@@ -9,3 +9,12 @@ export function userLogin(data) {
         data: data,
     })
 }
+
+// 用户注册
+export function userRegister(data) {
+    return request({
+        url: '/register',
+        method: 'post',
+        data: data,
+    })
+}

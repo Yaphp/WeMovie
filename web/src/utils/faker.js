@@ -1,4 +1,4 @@
-import {choice,choiceOne} from '@/utils/array'
+import {choice, choiceOne} from '@/utils/array'
 
 
 function dicingChar(series) {
