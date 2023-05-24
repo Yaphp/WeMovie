@@ -19,16 +19,18 @@ func (con UserController) Add(c *gin.Context) {
 	err := c.ShouldBindJSON(&user)
 
 	if err != nil {
+		con.Error(c, "参数解析失败")
 		return
 	}
 
-	user.Password = utils.Md5(user.Password)
+	// md5加密password + salt
+	user.Password = utils.Md5(user.Password + "810169")
 
 	user.CreatedAt = model.LocalTime(utils.GetDateTime())
 
 	fmt.Println(user)
 
-	err = con.db().Create(&user).Error
+	err = model.Db.Create(&user).Error
 
 	if err != nil {
 		con.Error(c, "添加失败")
@@ -45,7 +47,7 @@ func (con UserController) Delete(c *gin.Context) {
 
 	var user model.User
 
-	err := con.db().Where("id in (?)", ids).Delete(&user).Error
+	err := model.Db.Where("id in (?)", ids).Delete(&user).Error
 
 	if err != nil {
 		con.Error(c, "删除失败")
@@ -58,23 +60,33 @@ func (con UserController) Delete(c *gin.Context) {
 func (con UserController) Update(c *gin.Context) {
 	user := model.User{}
 
-	c.ShouldBindJSON(&user)
+	err := c.ShouldBindJSON(&user)
+
+	if err != nil {
+		con.Error(c, "参数解析失败")
+		return
+	}
 
 	fmt.Println(user)
 
-	var err error
-
 	if user.Password == "" {
-		err = con.db().Omit("password").Where("id = ?", user.Id).Save(&user).Error
+		err = model.Db.Omit("password").Where("id = ?", user.Id).Save(&user).Error
 	} else {
-		user.Password = utils.Md5(user.Password)
-		err = con.db().Where("id = ?", user.Id).Save(&user).Error
+		user.Password = utils.Md5(user.Password + "810169")
+		err = model.Db.Where("id = ?", user.Id).Save(&user).Error
 	}
 
 	if err != nil {
 		con.Error(c, "更新失败")
 	} else {
-		con.Success(c, "更新成功")
+		// 统计使用的内存总量
+		var result []int64
+		var total int64
+		model.Db.Model(&model.File{}).Where("uid = ?", user.Id).Pluck("Size", &result)
+		for _, v := range result {
+			total += v
+		}
+		con.SuccessWithCount(c, user, total)
 	}
 }
 
@@ -84,7 +96,7 @@ func (con UserController) Index(c *gin.Context) {
 	pageSize := c.DefaultQuery("pageSize", "10")
 	keyword := c.Query("keyword")
 
-	user := []model.User{}
+	var user []model.User
 
 	var total int64
 
@@ -100,18 +112,12 @@ func (con UserController) Index(c *gin.Context) {
 	}
 
 	if keyword != "" {
-		con.db().Where("username like ?", "%"+keyword+"%").Find(&user).Count(&total)
-		con.db().Where("username like ?", "%"+keyword+"%").Offset((page - 1) * size).Order("id desc").Limit(size).Find(&user)
+		model.Db.Where("username like ?", "%"+keyword+"%").Find(&user).Count(&total)
+		model.Db.Where("username like ?", "%"+keyword+"%").Offset((page - 1) * size).Order("id desc").Limit(size).Find(&user)
 	} else {
-		con.db().Find(&user).Count(&total)
-		con.db().Offset((page - 1) * size).Order("id desc").Limit(size).Find(&user)
+		model.Db.Find(&user).Count(&total)
+		model.Db.Offset((page - 1) * size).Order("id desc").Limit(size).Find(&user)
 	}
 
-	var result = make(map[string]interface{})
-
-	result["total"] = total
-
-	result["list"] = user
-
-	con.Success(c, result)
+	con.SuccessWithCount(c, user, total)
 }

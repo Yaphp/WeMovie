@@ -9,7 +9,7 @@ import (
 
 type BaseController struct{}
 
-// 成功返回
+// Success 成功返回
 func (con BaseController) Success(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
@@ -18,7 +18,17 @@ func (con BaseController) Success(c *gin.Context, data interface{}) {
 	})
 }
 
-// 错误返回
+// SuccessWithCount 返回带总数的数据
+func (con BaseController) SuccessWithCount(c *gin.Context, data interface{}, count int64) {
+	c.JSON(http.StatusOK, gin.H{
+		"code":  0,
+		"msg":   "success",
+		"data":  data,
+		"count": count,
+	})
+}
+
+// Error 错误返回
 func (con BaseController) Error(c *gin.Context, msg string) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": 1,
@@ -31,12 +41,12 @@ func (con BaseController) CheckLogin(c *gin.Context) bool {
 	return true
 }
 
-// 获取db链接
+// db 获取数据库连接
 func (con BaseController) db() *gorm.DB {
 	return model.Db
 }
 
-// 获取json参数 (int类型会丢失)
+// Params 获取json参数 (int类型会丢失)
 func (con BaseController) Params(c *gin.Context) map[string]string {
 	var params map[string]string
 	c.BindJSON(&params)

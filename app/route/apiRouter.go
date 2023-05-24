@@ -39,22 +39,23 @@ func Auth() gin.HandlerFunc {
 func ApiRouter(r *gin.Engine) {
 	routerWithOutLogin := r.Group("/api")
 	{
-		routerWithOutLogin.POST("/register", controller.LoginController{}.Add)
-		routerWithOutLogin.POST("/login", controller.LoginController{}.Index)
+		routerWithOutLogin.POST("/register", controller.LoginController{}.Add) // 注册
+		routerWithOutLogin.POST("/login", controller.LoginController{}.Index)  // 登录
 	}
 
 	routerWithLogin := r.Group("/api").Use(Auth())
 	{
-		routerWithLogin.POST("/upload", controller.UploadController{}.Add)
+		routerWithLogin.POST("/upload", controller.UploadController{}.Index)       // 上传文件
+		routerWithLogin.POST("/upload/chunk", controller.UploadController{}.Chunk) // 上传文件
 
-		routerWithLogin.POST("/user", controller.UserController{}.Add)
-		routerWithLogin.DELETE("/user", controller.UserController{}.Delete)
-		routerWithLogin.PUT("/user", controller.UserController{}.Update)
-		routerWithLogin.GET("/user", controller.UserController{}.Index)
+		routerWithLogin.POST("/user", controller.UserController{}.Add)      // 添加用户
+		routerWithLogin.DELETE("/user", controller.UserController{}.Delete) // 删除用户
+		routerWithLogin.PUT("/user", controller.UserController{}.Update)    // 更新用户
+		routerWithLogin.GET("/user", controller.UserController{}.Index)     // 获取用户列表
 
-		routerWithLogin.POST("/file", controller.FileController{}.Add)
-		routerWithLogin.DELETE("/file", controller.FileController{}.Delete)
-		routerWithLogin.PUT("/file", controller.FileController{}.Update)
-		routerWithLogin.GET("/file", controller.FileController{}.Index)
+		routerWithLogin.POST("/file", controller.FileController{}.Add)      // 添加文件
+		routerWithLogin.DELETE("/file", controller.FileController{}.Delete) // 删除文件
+		routerWithLogin.PUT("/file", controller.FileController{}.Update)    // 更新文件
+		routerWithLogin.GET("/file", controller.FileController{}.Index)     // 获取文件列表
 	}
 }

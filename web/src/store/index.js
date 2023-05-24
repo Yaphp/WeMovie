@@ -8,6 +8,7 @@ export default createStore({
             "host": window.location.protocol + "://" + window.location.hostname,
         },
         user: JSON.parse(sessionStorage.getItem("user")) || null,
+        memory: sessionStorage.getItem("memory") || null,
         token: sessionStorage.getItem("token") || null,
         tabName: '首页',
         chunkSize: 1024 * 1024 * 10,
@@ -55,6 +56,10 @@ export default createStore({
         SET_USERINFO: (state, user) => {
             state.user = user
             sessionStorage.setItem("user", JSON.stringify(user))
+        },
+        SET_MEMORY: (state, memory) => {
+            state.memory = memory
+            sessionStorage.setItem("memory", JSON.stringify(memory))
         },
         REMOVE_INFO: (state) => {
             sessionStorage.setItem("token", '')

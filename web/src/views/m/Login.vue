@@ -79,7 +79,7 @@ export default {
                                 location.href = this.redirect
                                 return
                             }
-                            if (res.data.role === "1") {
+                            if (res.data.role === 1) {
                                 this.$router.push({path: '/files'})
                             } else {
                                 this.$router.push({path: '/index'})

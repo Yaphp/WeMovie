@@ -7,7 +7,7 @@
             <van-col span="16" class="username">
                 <div class="name">{{ this.$store.state.user && this.$store.state.user.username }}</div>
                 <div class="memory">
-                    存储总量: {{ getFileSize(this.$store.state.user?.memory || 0) || '0KB' }}
+                    存储总量: {{ getFileSize(this.$store.state.memory) || '0KB' }}
                 </div>
             </van-col>
         </van-row>

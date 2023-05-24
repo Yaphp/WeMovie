@@ -90,6 +90,7 @@ export default {
                             //保存token
                             this.$store.commit('SET_TOKEN', res.data.token)
                             this.$store.commit('SET_USERINFO', res.data)
+                            this.$store.commit('SET_MEMORY', res.count)
                             this.$message({
                                 message: '登录成功',
                                 type: 'success',

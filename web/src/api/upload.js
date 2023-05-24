@@ -14,7 +14,7 @@ export function upload(data) {
 
 export function uploadChunk(data) {
     return request({
-        url: '/uploadchunk',
+        url: '/upload/chunk',
         method: 'post',
         headers: {
             'Content-Type': 'multipart/form-data'

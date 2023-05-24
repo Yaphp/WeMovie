@@ -9,7 +9,7 @@ import (
 type User struct {
 	Id         int       `json:"id" gorm:"column:id;type:int(11);not null;primaryKey;autoIncrement"`
 	Username   string    `json:"username" gorm:"column:username;type:varchar(255);not null"`
-	Avatar     string    `json:"avatar" gorm:"column:avatar;type:varchar(255);not null"`
+	Avatar     string    `json:"avatar" gorm:"column:avatar;type:varchar(255);not null;default:'/images/avatar.png'"`
 	Phone      string    `json:"phone" gorm:"column:phone;type:varchar(11);not null"`
 	Email      string    `json:"email" gorm:"column:email;type:varchar(50);not null"`
 	Password   string    `json:"password" gorm:"column:password;type:varchar(255);not null"`
@@ -21,9 +21,9 @@ type User struct {
 
 // 生成token
 func (user User) CreateToken(uid int) string {
-	//使用md5 uid+当前时间戳
+	//使用md5 salt+uid+当前时间戳
 	m := md5.New()
-	m.Write([]byte(fmt.Sprintf("%d%d", uid, time.Now().Unix())))
+	m.Write([]byte(fmt.Sprintf("%d%d%d", 810169, uid, time.Now().Unix())))
 	token := fmt.Sprintf("%x", m.Sum(nil))
 	return token
 }

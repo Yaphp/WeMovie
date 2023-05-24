@@ -32,7 +32,7 @@
                             <div class="user-name">
                                 <p class="username">{{ this.$store.state.user.username }}</p>
                                 <p class="memory">
-                                    存储总量: {{ getFileSize(this.$store.state.user.memory) || '0KB' }}
+                                    存储总量: {{ getFileSize(this.$store.state.memory) || '0KB' }}
                                 </p>
                             </div>
                         </div>
@@ -75,10 +75,10 @@ export default {
     },
     mounted() {
         switch (this.$store.state.user.role) {
-            case "0":
+            case 0:
                 this.menuData = this.$store.state.rootMenuData;
                 break;
-            case "1":
+            case 1:
                 this.menuData = this.$store.state.userMenuData;
                 break;
         }

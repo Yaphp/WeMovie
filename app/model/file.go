@@ -1,5 +1,7 @@
 package model
 
+import "wemovie/app/utils"
+
 type File struct {
 	Id         int       `json:"id" gorm:"column:id;type:int(11);not null;primaryKey;autoIncrement"`
 	Pid        int       `json:"pid" gorm:"column:pid;type:int(11);not null"`
@@ -13,4 +15,53 @@ type File struct {
 	DeleteFlag int       `json:"delete_flag" gorm:"column:delete_flag;type:int(1);not null"`
 	CreatedAt  LocalTime `json:"created_at" gorm:"column:created_at;not null"`
 	UpdatedAt  LocalTime `json:"updated_at" gorm:"column:updated_at;not null"`
+}
+
+// GetDirAndFile 遍历文件夹及子文件夹、文件
+func GetDirAndFile(files []File, dirs []File) []File {
+	for _, v := range files {
+		dirs = append(dirs, v)
+		if v.Type == "folder" {
+			var children []File
+			Db.Where("pid = ?", v.Id).Find(&children) // 查询v.ID下的文件
+			GetDirAndFile(children, dirs)
+		}
+	}
+	return dirs
+}
+
+// SaveDirAndFile 保存文件夹及子文件夹、文件
+func SaveDirAndFile(info map[string]int, files []File, dirs []File) []File {
+	for _, v := range files {
+		pid := v.Pid
+
+		if v.Type == "folder" {
+			// 查询子文件夹下的文件
+			var subFile []File
+			Db.Where("pid = ?", pid).Find(&subFile) // 查询pid下的文件
+
+			// 获取创建文件夹时生成的ID
+			var file File
+			file.Pid = info["pid"]
+			file.Uid = info["uid"]
+			file.Type = "folder"
+			file.Name = v.Name
+			file.CreatedAt = LocalTime(utils.GetDateTime())
+			file.UpdatedAt = LocalTime(utils.GetDateTime())
+
+			// 创建文件夹生成的ID
+			Db.Create(&file)
+
+			info["pid"] = file.Id
+			SaveDirAndFile(info, subFile, dirs)
+		} else {
+			v.Id = 0
+			v.Pid = info["pid"]
+			v.Uid = info["uid"]
+			v.CreatedAt = LocalTime(utils.GetDateTime())
+			v.UpdatedAt = LocalTime(utils.GetDateTime())
+			dirs = append(dirs, v)
+		}
+	}
+	return dirs
 }
