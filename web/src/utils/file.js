@@ -42,7 +42,7 @@ function getFileIcon(file) {
  * 根据文件大小计算单位
  */
 function getFileSize(size) {
-    if (!size) return '';
+    if (!size || size === "0") return '';
     let unit = 'B'
     if (size > 1024) {
         size = size / 1024

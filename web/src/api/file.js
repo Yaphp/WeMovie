@@ -61,7 +61,7 @@ export function fileFavorite(data) {
 
 export function fileSave(data) {
     return request({
-        url: '/file/save',
+        url: '/share/save',
         method: 'post',
         data
     })

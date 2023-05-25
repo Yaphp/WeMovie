@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"os"
-	"strconv"
+	"runtime"
 	"strings"
 	"wemovie/app/model"
 	"wemovie/app/utils"
@@ -32,12 +31,12 @@ func (con FileController) Add(c *gin.Context) {
 
 	//fmt.Println(file)
 
-	err = model.Db.Create(&file).Error
+	result := model.Db.Create(&file)
 
-	if err != nil {
-		con.Error(c, "添加失败")
+	if result.Error != nil {
+		con.Error(c, result.Error.Error())
 	} else {
-		con.Success(c, "添加成功")
+		con.Success(c, file.Id)
 	}
 }
 
@@ -80,8 +79,12 @@ func (con FileController) Delete(c *gin.Context) {
 			fileIds = append(fileIds, v.Id)
 		}
 
+		var path string
+		var thumbnailPath string
+
 		// 遍历文件
-		for _, v := range files {
+		for _, v := range dirs {
+			fmt.Println(v)
 			if v.Type == "folder" {
 				// 跳过
 				continue
@@ -98,8 +101,12 @@ func (con FileController) Delete(c *gin.Context) {
 				continue
 			}
 
-			// 拼接真实路径
-			path := utils.GetRootPath() + "dist" + v.Path
+			// 如果当前系统为windows，将路径中的/替换为\ // 拼接真实路径
+			if runtime.GOOS == "windows" {
+				path = utils.GetRootPath() + "\\dist" + strings.Replace(v.Path, "/", "\\", -1)
+			} else {
+				path = utils.GetRootPath() + "/dist" + v.Path
+			}
 
 			// 删除文件
 			err := os.Remove(path)
@@ -108,9 +115,15 @@ func (con FileController) Delete(c *gin.Context) {
 			}
 
 			// 如果是图片，删除缩略图
-			if v.Type == "image" {
-				// 拼接缩略图路径
-				thumbnailPath := utils.GetRootPath() + "dist" + v.Thumb
+			if strings.Contains(v.Type, "image") {
+
+				if runtime.GOOS == "windows" {
+					// 拼接缩略图路径
+					thumbnailPath = utils.GetRootPath() + "\\dist" + strings.Replace(v.Thumb, "/", "\\", -1)
+				} else {
+					thumbnailPath = utils.GetRootPath() + "/dist" + v.Thumb
+				}
+
 				// 删除缩略图
 				err := os.Remove(thumbnailPath)
 				if err != nil {
@@ -135,44 +148,29 @@ func (con FileController) Delete(c *gin.Context) {
 func (con FileController) Update(c *gin.Context) {
 	file := model.File{}
 
-	err := c.ShouldBindJSON(&file)
-	if err != nil {
-		bodyBuffer := bytes.Buffer{}
-		_, err := bodyBuffer.ReadFrom(c.Request.Body)
+	var params = make(map[string]interface{})
 
-		if err != nil {
-			con.Error(c, err.Error())
-			return
-		}
+	json.NewDecoder(c.Request.Body).Decode(&params)
 
-		defer c.Request.Body.Close()
-		var params map[string]interface{}
-		println(bodyBuffer.Bytes())
-		if err := json.Unmarshal(bodyBuffer.Bytes(), &params); err != nil {
-			con.Error(c, err.Error())
-			return
-		}
+	var ids interface{}
 
-		// 把params["id"]转换成字符串
-		ids := strconv.Itoa(params["id"].(int))
-
-		model.Db.Model(&file).Where("id in ?", strings.Split(ids, ",")).Updates(params)
-
-		// 判断是否修改成功
-		if model.Db.RowsAffected > 0 {
-			con.Success(c, "更新成功")
-		} else {
-			print(model.Db.RowsAffected)
-			con.Error(c, "更新失败")
-		}
+	// 如果params['id']是字符串
+	if _, ok := params["id"].(string); ok {
+		ids = strings.Split(params["id"].(string), ",")
 	} else {
-		err = model.Db.Where("id = ?", file.Id).Save(&file).Error
+		ids = params["id"]
+	}
 
-		if err != nil {
-			con.Error(c, "更新失败")
-		} else {
-			con.Success(c, "更新成功")
-		}
+	// 删除id
+	delete(params, "id")
+
+	result := model.Db.Debug().Model(&file).Where("id in (?)", ids).Updates(params)
+
+	// 判断是否修改成功
+	if result.RowsAffected > 0 {
+		con.Success(c, "更新成功")
+	} else {
+		con.Error(c, result.Error.Error())
 	}
 }
 
@@ -185,7 +183,7 @@ func (con FileController) Index(c *gin.Context) {
 	id := c.DefaultQuery("id", "")                          // 文件id
 	pid := c.DefaultQuery("pid", "0")                       // 父级id
 	uid := c.DefaultQuery("uid", "0")                       // 用户id
-	favorite := c.DefaultQuery("favorite", "0")             // 是否收藏
+	favorite := c.DefaultQuery("favorite", "")              // 是否收藏
 	exclude := c.DefaultQuery("exclude", "")                // 排除的文件夹id
 	deleteFlag := c.DefaultQuery("delete_flag", "0")        // 是否删除
 	orderBy := c.DefaultQuery("order_by", "created_at asc") // 排序
@@ -194,8 +192,8 @@ func (con FileController) Index(c *gin.Context) {
 	var pageSize int
 
 	if page != "" && limit != "" {
-		pageNo := utils.StrToInt(page)    // 把params["page"]转换成int
-		pageSize := utils.StrToInt(limit) // 把params["limit"]转换成int
+		pageNo = utils.StrToInt(page)    // 把params["page"]转换成int
+		pageSize = utils.StrToInt(limit) // 把params["limit"]转换成int
 
 		// 默认分页
 		if pageNo <= 0 {
@@ -216,12 +214,16 @@ func (con FileController) Index(c *gin.Context) {
 		"pid":         pid,
 		"uid":         uid,
 		"delete_flag": deleteFlag,
-		"favorite":    favorite,
 	}
 
 	// 非搜索全部时指定pid
 	if pid == "all" {
 		delete(query, "pid")
+	}
+
+	// 是否收藏查询条件
+	if favorite != "" {
+		query["favorite"] = favorite
 	}
 
 	// 文件对象
@@ -266,6 +268,9 @@ func (con FileController) Index(c *gin.Context) {
 	} else if pid != "" {
 		// 根据pid查询
 		fileModel.Where(query).Order(orderBy).Find(&file).Count(&total)
+		if pageNo > 0 && pageSize > 0 {
+			fileModel.Offset((pageNo - 1) * pageSize).Limit(pageSize)
+		}
 		fileModel.Find(&file)
 	} else {
 		fileModel.Count(&total) // 计算总条数
@@ -284,12 +289,12 @@ func (con FileController) Favorite(c *gin.Context) {
 	ids := strings.Split(id, ",") // 文件ids
 	status := c.Query("status")   // 收藏状态
 
-	var data map[string]interface{}
+	data := make(map[string]interface{})
 
-	data["favorite"] = utils.StrToInt(status)
+	data["favorite"] = status
 	data["updated_at"] = model.LocalTime(utils.GetDateTime())
 
-	err := model.Db.Model(&model.File{}).Where("id in ?", ids).Updates(data).Error
+	err := model.Db.Model(&model.File{}).Where("id in (?)", ids).Updates(data).Error
 
 	if err != nil {
 		con.Error(c, "收藏失败")

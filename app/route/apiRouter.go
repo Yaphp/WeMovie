@@ -41,6 +41,8 @@ func ApiRouter(r *gin.Engine) {
 	{
 		routerWithOutLogin.POST("/register", controller.LoginController{}.Add) // 注册
 		routerWithOutLogin.POST("/login", controller.LoginController{}.Index)  // 登录
+
+		routerWithOutLogin.GET("/share", controller.ShareController{}.Index) // 分享文件查询
 	}
 
 	routerWithLogin := r.Group("/api").Use(Auth())
@@ -53,9 +55,14 @@ func ApiRouter(r *gin.Engine) {
 		routerWithLogin.PUT("/user", controller.UserController{}.Update)    // 更新用户
 		routerWithLogin.GET("/user", controller.UserController{}.Index)     // 获取用户列表
 
-		routerWithLogin.POST("/file", controller.FileController{}.Add)      // 添加文件
-		routerWithLogin.DELETE("/file", controller.FileController{}.Delete) // 删除文件
-		routerWithLogin.PUT("/file", controller.FileController{}.Update)    // 更新文件
-		routerWithLogin.GET("/file", controller.FileController{}.Index)     // 获取文件列表
+		routerWithLogin.POST("/file", controller.FileController{}.Add)              // 添加文件
+		routerWithLogin.DELETE("/file", controller.FileController{}.Delete)         // 删除文件
+		routerWithLogin.PUT("/file", controller.FileController{}.Update)            // 更新文件
+		routerWithLogin.GET("/file", controller.FileController{}.Index)             // 获取文件列表
+		routerWithLogin.PUT("/file/favorite", controller.FileController{}.Favorite) // 收藏/取消收藏文件
+
+		routerWithLogin.POST("/share", controller.ShareController{}.Add)       // 创建分享文件
+		routerWithLogin.POST("/share/save", controller.ShareController{}.Save) // 保存分享文件
+
 	}
 }

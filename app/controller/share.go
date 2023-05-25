@@ -61,7 +61,9 @@ func (con ShareController) Add(c *gin.Context) {
 
 	// 当前请求域名
 	domain := c.Request.Host
-	url := domain + "#/share?file=" + hashId + "&password=" + password
+
+	url := "https://" + domain + "#/share?file=" + hashId + "&password=" + password
+
 	con.Success(c, url)
 }
 
@@ -134,7 +136,7 @@ func (con ShareController) Index(c *gin.Context) {
 
 // Save 保存分享的文件
 func (con ShareController) Save(c *gin.Context) {
-	var param = make(map[string]string)
+	var param = make(map[string]interface{})
 
 	json.NewDecoder(c.Request.Body).Decode(&param)
 
@@ -145,8 +147,9 @@ func (con ShareController) Save(c *gin.Context) {
 	// 判断是否已经保存过
 	var file model.File
 	var total int64
-	model.Db.Find(&file).Where("fid = in ? and uid = ?", strings.Split(Fid, ","), Uid).Count(&total)
+	model.Db.Find(&file).Where("id in (?) and uid = ?", strings.Split(Fid.(string), ","), Uid).Count(&total)
 
+	// 如果已经保存过则不再保存
 	if total > 0 {
 		con.Success(c, "文件已存在")
 		return
@@ -154,15 +157,16 @@ func (con ShareController) Save(c *gin.Context) {
 
 	// 获取文件信息
 	var files []model.File
-	model.Db.Where("id in ?", strings.Split(Fid, ",")).Find(&files)
+	model.Db.Where("id in (?)", strings.Split(Fid.(string), ",")).Find(&files)
 
 	// 新文件记录
 	var item []model.File
 
 	// 文件基本信息
-	var info map[string]int
-	info["uid"] = utils.StrToInt(Uid)
-	info["pid"] = utils.StrToInt(Pid)
+	var info = make(map[string]int)
+
+	info["uid"] = int(Uid.(float64))
+	info["pid"] = int(Pid.(float64))
 
 	// 获取文件夹信息 及 子文件夹文件信息
 	item = model.SaveDirAndFile(info, files, item)

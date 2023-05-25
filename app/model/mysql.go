@@ -12,7 +12,7 @@ var Db *gorm.DB
 var err error
 
 func init() {
-	config := utils.ReadSettingsFromFile("config.json")
+	config := utils.ReadSettingsFromFile(utils.GetRootPath() + "/config.json")
 
 	fmt.Println("加载数据库配置信息：" + config.Database.Dsn)
 

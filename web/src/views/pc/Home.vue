@@ -32,7 +32,7 @@
                             <div class="user-name">
                                 <p class="username">{{ this.$store.state.user.username }}</p>
                                 <p class="memory">
-                                    存储总量: {{ getFileSize(this.$store.state.memory) || '0KB' }}
+                                    存储总量: {{ getFileSize(this.$store.state.memory || 0) || '0KB' }}
                                 </p>
                             </div>
                         </div>

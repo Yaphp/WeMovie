@@ -128,7 +128,7 @@ export default {
             let ids = this.files.map(file => file.id);
             fileUpdate({
                 "id": ids.join(","),
-                "pid": this.pid
+                "pid": this.pid,// 转为字符串
             }).then(res => {
                 if (res.code === 0) {
                     this.$emit("confirm", {

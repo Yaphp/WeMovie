@@ -23,8 +23,9 @@ func GetDirAndFile(files []File, dirs []File) []File {
 		dirs = append(dirs, v)
 		if v.Type == "folder" {
 			var children []File
-			Db.Where("pid = ?", v.Id).Find(&children) // 查询v.ID下的文件
-			GetDirAndFile(children, dirs)
+			Db.Model(&File{}).Where("pid = ?", v.Id).Find(&children) // 查询v.ID下的文件
+			subdirs := GetDirAndFile(children, dirs)
+			dirs = append(dirs, subdirs...) // 将子文件夹、文件合并到dirs
 		}
 	}
 	return dirs
@@ -33,12 +34,11 @@ func GetDirAndFile(files []File, dirs []File) []File {
 // SaveDirAndFile 保存文件夹及子文件夹、文件
 func SaveDirAndFile(info map[string]int, files []File, dirs []File) []File {
 	for _, v := range files {
-		pid := v.Pid
-
 		if v.Type == "folder" {
 			// 查询子文件夹下的文件
 			var subFile []File
-			Db.Where("pid = ?", pid).Find(&subFile) // 查询pid下的文件
+
+			Db.Where("pid = ?", v.Id).Find(&subFile) // 查询pid下的文件
 
 			// 获取创建文件夹时生成的ID
 			var file File
@@ -53,7 +53,8 @@ func SaveDirAndFile(info map[string]int, files []File, dirs []File) []File {
 			Db.Create(&file)
 
 			info["pid"] = file.Id
-			SaveDirAndFile(info, subFile, dirs)
+			subdirs := SaveDirAndFile(info, subFile, dirs)
+			dirs = append(dirs, subdirs...)
 		} else {
 			v.Id = 0
 			v.Pid = info["pid"]

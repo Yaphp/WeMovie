@@ -23,6 +23,11 @@ func (con UploadController) Index(c *gin.Context) {
 	// 获取上传的文件名
 	uploadFileName := c.PostForm("name")
 
+	// 如果没有传name参数则使用文件名
+	if uploadFileName == "" {
+		uploadFileName = f.Filename
+	}
+
 	// 获取当前日期
 	date := time.Now().Format("20060102")
 
@@ -33,12 +38,12 @@ func (con UploadController) Index(c *gin.Context) {
 	fileSuffix := uploadFileName[strings.LastIndex(uploadFileName, "."):]
 
 	// 检测文件夹是否存在 不存在则创建
-	if !utils.CheckFileIsExist("./dist/uploads/" + date) {
-		utils.CreateDir("./dist/uploads/" + date)
+	if !utils.CheckFileIsExist(utils.GetRootPath() + "/dist/uploads/" + date) {
+		utils.CreateDir(utils.GetRootPath() + "/dist/uploads/" + date)
 	}
 
 	//上传文件至指定目录
-	err := c.SaveUploadedFile(f, "./dist/uploads/"+date+"/"+fileName+fileSuffix)
+	err := c.SaveUploadedFile(f, utils.GetRootPath()+"/dist/uploads/"+date+"/"+fileName+fileSuffix)
 
 	if err != nil {
 		println(err)
@@ -60,7 +65,7 @@ func (con UploadController) Index(c *gin.Context) {
 	// 判断是否为图片
 	if strings.Contains(c.PostForm("type"), "image") {
 		// 生成缩略图
-		thumb := utils.GetThumbnailImage("./dist/uploads/" + date + "/" + fileName + fileSuffix)
+		thumb := utils.GetThumbnailImage(utils.GetRootPath() + "/dist/uploads/" + date + "/" + fileName + fileSuffix)
 		file.Thumb = "/uploads/" + date + "/" + thumb
 	} else {
 		file.Thumb = ""
@@ -95,7 +100,11 @@ func (con UploadController) Chunk(c *gin.Context) {
 	if c.PostForm("merge") == "true" {
 		var file model.File
 		if strings.Contains(c.PostForm("type"), "image") {
-			file.Thumb = utils.GetThumbnailImage(path)
+			// 生成缩略图
+			thumbName := utils.GetThumbnailImage(path)
+			uuidName := strings.Split(thumbName, "_")[1]
+			replace := strings.Replace(path, uuidName, thumbName, 1)
+			file.Thumb = replace
 		}
 
 		file.Pid = utils.StrToInt(c.PostForm("pid"))
@@ -103,7 +112,7 @@ func (con UploadController) Chunk(c *gin.Context) {
 		file.Name = name
 		file.Type = c.PostForm("type")
 		file.Size = utils.StrToFloat64(c.PostForm("size"))
-		file.Path = strings.Replace(path, "./dist", "", 1) //把./dist替换成空
+		file.Path = strings.Split(path, "/dist")[1]
 		file.CreatedAt = model.LocalTime(utils.GetDateTime())
 		file.UpdatedAt = model.LocalTime(utils.GetDateTime())
 
@@ -124,13 +133,13 @@ func (con UploadController) Chunk(c *gin.Context) {
 
 	// 无路径时生成路径
 	if path == "" {
-		date := utils.GetDate()
+		date := time.Now().Format("20060102")
 
 		// 生成文件uuid
 		uuidName := uuid.New().String()
 
 		// 保存路径
-		path = "./dist/uploads/" + date
+		path = utils.GetRootPath() + "/dist/uploads/" + date
 
 		// 判断文件夹是否存在 不存在则创建
 		if !utils.CheckFileIsExist(path) {
@@ -170,6 +179,12 @@ func (con UploadController) Chunk(c *gin.Context) {
 	if _, err = io.Copy(file, fReader); err != nil {
 		panic(err)
 	}
+
+	// 关闭文件
+	file.Close()
+
+	// 关闭文件
+	fReader.Close()
 
 	con.Success(c, path)
 }

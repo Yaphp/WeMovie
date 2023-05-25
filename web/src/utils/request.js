@@ -56,6 +56,7 @@ service.interceptors.response.use(
         // 超出 2xx 范围的状态码都会触发该函数。
         // 对响应错误做点什么
         console.log(error)
+        ElMessage.error(error.message)
         return Promise.reject(error)
     }
 )

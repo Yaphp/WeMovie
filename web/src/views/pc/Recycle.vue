@@ -60,7 +60,6 @@
                           @select="selectedRow"
                           @select-all="selectedRow"
                           @row-click="handleClickRow"
-                          @row-contextmenu="handleRightClickRow"
                           :empty-text="tableEmptyText"
                           style="width: 100%"
                 >
