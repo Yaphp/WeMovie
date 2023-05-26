@@ -6,26 +6,32 @@
 
     <!--  android 设置-->
     <meta name="application-name" content="WePan">  <!-- 自定义应用名称 -->
-    <link rel="icon" href="/images/logo.jpg"> <!-- 自定义图标 -->
+    <link rel="icon" href="http://wp.yaphp.net/images/logo.jpg"> <!-- 自定义图标 -->
     <meta name="mobile-web-app-capable" content="yes"> <!-- 网站开启对 web app 程序的支持 具体表现为去除浏览器地址栏和底部导航栏 -->
 
     <!--  ios 设置 -->
     <meta name="apple-mobile-web-app-title" content="WePan"> <!-- iOS中的Safari浏览器顶端标题 -->
     <meta name="apple-mobile-web-app-capable" content="yes"> <!-- 网站开启对 web app 程序的支持 具体表现为去除浏览器地址栏和底部导航栏 -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="default"> <!-- 用来定义顶部状态栏的形式默认是default为白色 black为黑色 black-translucent为灰色半透明（会占据屏幕的约20px，不同的设备可能会有差异）-->
-    <link rel="apple-touch-icon" href="/images/logo.jpg"/><!-- 自定义图标 必须为域名访问的地址 -->
-    <link rel="apple-touch-icon-precomposed" href="/images/logo.jpg"> <!-- 自定义图标 无高光效果 必须为域名访问的地址 -->
-    <link rel="apple-touch-startup-image" href="/images/startup.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)"/> <!-- iphone13启动页图片 -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- 用来定义顶部状态栏的形式默认是default为白色 black为黑色 black-translucent为灰色半透明（会占据屏幕的约20px，不同的设备可能会有差异）-->
+    <link rel="apple-touch-icon" href="http://wp.yaphp.net/images/logo.jpg"/><!-- 自定义图标 必须为域名访问的地址 -->
+    <link rel="apple-touch-icon-precomposed" href="http://wp.yaphp.net/images/logo.jpg"> <!-- 自定义图标 无高光效果 必须为域名访问的地址 -->
+    <link rel="apple-touch-startup-image" href="http://wp.yaphp.net/images/startup.png"
+          media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)"/>
+    <!-- iphone13启动页图片 -->
 
     <!-- 通用设置 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,viewport-fit=cover"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,viewport-fit=cover"/>
 
     <!-- https 协议升级 -->
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <script type="module" crossorigin src="/assets/index.943dfe02.js"></script>
+    <link rel="stylesheet" href="/assets/index.50c88457.css">
 </head>
 <body>
 <div id="app"></div>
-<script type="module" src="/src/main.js"></script>
+
 <script>
     document.body.addEventListener('touchstart', () => {
         //listen to touch event to enable css :active pseudo class
