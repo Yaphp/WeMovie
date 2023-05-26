@@ -3,7 +3,7 @@ import {createStore} from 'vuex'
 export default createStore({
     state: {
         app: {
-            "name": "WeMovie",
+            "name": "WePan",
             "version": "1.0.0",
             "host": window.location.protocol + "://" + window.location.hostname,
         },
