@@ -9,3 +9,4 @@ uploads/
 !build/readme.md
 !uploads/readme.md
 dist/
+venv/
