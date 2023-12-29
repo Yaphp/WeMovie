@@ -38,12 +38,12 @@ func (con UploadController) Index(c *gin.Context) {
 	fileSuffix := uploadFileName[strings.LastIndex(uploadFileName, "."):]
 
 	// 检测文件夹是否存在 不存在则创建
-	if !utils.CheckFileIsExist(utils.GetRootPath() + "/dist/uploads/" + date) {
-		utils.CreateDir(utils.GetRootPath() + "/dist/uploads/" + date)
+	if !utils.CheckFileIsExist(utils.GetRootPath() + "/uploads/" + date) {
+		utils.CreateDir(utils.GetRootPath() + "/uploads/" + date)
 	}
 
 	//上传文件至指定目录
-	err := c.SaveUploadedFile(f, utils.GetRootPath()+"/dist/uploads/"+date+"/"+fileName+fileSuffix)
+	err := c.SaveUploadedFile(f, utils.GetRootPath()+"/uploads/"+date+"/"+fileName+fileSuffix)
 
 	if err != nil {
 		println(err)
@@ -65,7 +65,7 @@ func (con UploadController) Index(c *gin.Context) {
 	// 判断是否为图片
 	if strings.Contains(c.PostForm("type"), "image") {
 		// 生成缩略图
-		thumb := utils.GetThumbnailImage(utils.GetRootPath() + "/dist/uploads/" + date + "/" + fileName + fileSuffix)
+		thumb := utils.GetThumbnailImage(utils.GetRootPath() + "/uploads/" + date + "/" + fileName + fileSuffix)
 		file.Thumb = "/uploads/" + date + "/" + thumb
 	} else {
 		file.Thumb = ""
@@ -139,7 +139,7 @@ func (con UploadController) Chunk(c *gin.Context) {
 		uuidName := uuid.New().String()
 
 		// 保存路径
-		path = utils.GetRootPath() + "/dist/uploads/" + date
+		path = utils.GetRootPath() + "/uploads/" + date
 
 		// 判断文件夹是否存在 不存在则创建
 		if !utils.CheckFileIsExist(path) {
