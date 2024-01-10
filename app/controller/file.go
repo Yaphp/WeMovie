@@ -6,9 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
-	"wemovie/app/model"
-	"wemovie/app/utils"
+	"weapp/app/model"
+	"weapp/app/utils"
 )
 
 type FileController struct {
@@ -50,7 +51,7 @@ func (con FileController) Delete(c *gin.Context) {
 
 	if deleteFlag == "0" {
 		// 更新删除状态
-		err := model.Db.Model(&model.File{}).Where("id in (?)", ids).Update("delete_flag", 1).Error
+		err := model.Db.Where("id in (?)", ids).Delete(&model.File{}).Error
 		if err != nil {
 			con.Error(c, "删除失败")
 			return
@@ -103,9 +104,9 @@ func (con FileController) Delete(c *gin.Context) {
 
 			// 如果当前系统为windows，将路径中的/替换为\ // 拼接真实路径
 			if runtime.GOOS == "windows" {
-				path = utils.GetRootPath() + "\\dist" + strings.Replace(v.Path, "/", "\\", -1)
+				path = utils.GetRootPath() + strings.Replace(v.Path, "/", "\\", -1)
 			} else {
-				path = utils.GetRootPath() + "/dist" + v.Path
+				path = utils.GetRootPath() + v.Path
 			}
 
 			// 删除文件
@@ -115,13 +116,13 @@ func (con FileController) Delete(c *gin.Context) {
 			}
 
 			// 如果是图片，删除缩略图
-			if strings.Contains(v.Type, "image") {
+			if strings.Contains(v.Thumb, ".jpg") || strings.Contains(v.Thumb, "png") || strings.Contains(v.Thumb, "jpeg") {
 
 				if runtime.GOOS == "windows" {
 					// 拼接缩略图路径
-					thumbnailPath = utils.GetRootPath() + "\\dist" + strings.Replace(v.Thumb, "/", "\\", -1)
+					thumbnailPath = utils.GetRootPath() + strings.Replace(v.Thumb, "/", "\\", -1)
 				} else {
-					thumbnailPath = utils.GetRootPath() + "/dist" + v.Thumb
+					thumbnailPath = utils.GetRootPath() + v.Thumb
 				}
 
 				// 删除缩略图
@@ -134,7 +135,13 @@ func (con FileController) Delete(c *gin.Context) {
 
 		var file model.File
 
-		err = model.Db.Where("id in (?)", fileIds).Delete(&file).Error
+		//把ids遍历转为数字然后加入fileIds
+		for _, v := range ids {
+			idsInt, _ := strconv.Atoi(v)
+			fileIds = append(fileIds, idsInt)
+		}
+
+		err = model.Db.Unscoped().Where("id in (?)", fileIds).Delete(&file).Error
 
 		if err != nil {
 			con.Error(c, "删除失败")
@@ -185,7 +192,7 @@ func (con FileController) Index(c *gin.Context) {
 	uid := c.DefaultQuery("uid", "0")                       // 用户id
 	favorite := c.DefaultQuery("favorite", "")              // 是否收藏
 	exclude := c.DefaultQuery("exclude", "")                // 排除的文件夹id
-	deleteFlag := c.DefaultQuery("delete_flag", "0")        // 是否删除
+	deleteFlag := c.DefaultQuery("delete_flag", "0")        // 删除标记
 	orderBy := c.DefaultQuery("order_by", "created_at asc") // 排序
 
 	var pageNo int
@@ -211,9 +218,8 @@ func (con FileController) Index(c *gin.Context) {
 
 	// 声明查询条件
 	query := map[string]interface{}{
-		"pid":         pid,
-		"uid":         uid,
-		"delete_flag": deleteFlag,
+		"pid": pid,
+		"uid": uid,
 	}
 
 	// 非搜索全部时指定pid
@@ -234,6 +240,11 @@ func (con FileController) Index(c *gin.Context) {
 
 	// 创建文件模型
 	fileModel := model.Db.Debug().Where(query)
+
+	// 是否查询已删除的数据
+	if deleteFlag == "1" {
+		fileModel = fileModel.Unscoped()
+	}
 
 	// 搜索条件
 	if fileType != "" || keyword != "" {

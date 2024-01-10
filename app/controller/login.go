@@ -5,9 +5,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"time"
-	"wemovie/app/model"
-	"wemovie/app/utils"
+	"weapp/app/model"
+	"weapp/app/utils"
 )
 
 type LoginController struct {
@@ -38,9 +37,6 @@ func (con LoginController) Index(c *gin.Context) {
 
 		//更新token
 		model.Db.Model(&user).Update("token", token)
-
-		//更新登录时间
-		model.Db.Model(&user).Update("lasttime_at", time.Now())
 
 		//返回用户数据 以及 token 不返回密码
 		user.Password = ""
@@ -85,7 +81,7 @@ func (con LoginController) Add(c *gin.Context) {
 	user.Username = param["username"]
 	user.Password = password
 	user.CreatedAt = model.LocalTime(utils.GetDateTime())
-	user.LasttimeAt = model.LocalTime(utils.GetDateTime())
+	user.UpdatedAt = model.LocalTime(utils.GetDateTime())
 	user.Role = 1
 
 	model.Db.Create(&user)

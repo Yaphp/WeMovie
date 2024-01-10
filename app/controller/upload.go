@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 	"time"
-	"wemovie/app/model"
-	"wemovie/app/utils"
+	"weapp/app/model"
+	"weapp/app/utils"
 )
 
 type UploadController struct {
@@ -62,13 +62,17 @@ func (con UploadController) Index(c *gin.Context) {
 	// 保存到数据库
 	var file model.File
 
-	// 判断是否为图片
-	if strings.Contains(c.PostForm("type"), "image") {
+	// 判断是否为jpg png jpeg的图片
+	if strings.Contains(fileSuffix, "jpg") || strings.Contains(fileSuffix, "png") || strings.Contains(fileSuffix, "jpeg") {
 		// 生成缩略图
-		thumb := utils.GetThumbnailImage(utils.GetRootPath() + "/uploads/" + date + "/" + fileName + fileSuffix)
-		file.Thumb = "/uploads/" + date + "/" + thumb
+		thumb, err := utils.GetThumbnailImage(utils.GetRootPath() + "/uploads/" + date + "/" + fileName + fileSuffix)
+		if err != nil {
+			file.Thumb = "/uploads/" + date + "/" + fileName + fileSuffix
+		} else {
+			file.Thumb = "/uploads/" + date + "/" + thumb
+		}
 	} else {
-		file.Thumb = ""
+		file.Thumb = "/uploads/" + date + "/" + fileName + fileSuffix
 	}
 
 	// 保存到数据库
@@ -99,13 +103,14 @@ func (con UploadController) Chunk(c *gin.Context) {
 
 	if c.PostForm("merge") == "true" {
 		var file model.File
-		if strings.Contains(c.PostForm("type"), "image") {
-			// 生成缩略图
-			thumbName := utils.GetThumbnailImage(path)
-			uuidName := strings.Split(thumbName, "_")[1]
-			replace := strings.Replace(path, uuidName, thumbName, 1)
-			file.Thumb = replace
-		}
+
+		//if strings.Contains(c.PostForm("type"), "image") {
+		//	// 生成缩略图
+		//	thumbName := utils.GetThumbnailImage(path)
+		//	uuidName := strings.Split(thumbName, "_")[1]
+		//	replace := strings.Replace(path, uuidName, thumbName, 1)
+		//	file.Thumb = replace
+		//}
 
 		file.Pid = utils.StrToInt(c.PostForm("pid"))
 		file.Uid = utils.StrToInt(c.PostForm("uid"))

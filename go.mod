@@ -1,4 +1,4 @@
-module wemovie
+module weapp
 
 go 1.19
 

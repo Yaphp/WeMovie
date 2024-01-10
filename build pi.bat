@@ -5,5 +5,5 @@ set CGO_ENABLED=0
 
 @echo off
 echo "build start"
-go build -o ./wepan
+go build -o ./weapp
 echo "build done"

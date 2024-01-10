@@ -7,10 +7,11 @@ import (
 )
 
 // GetThumbnailImage 生成缩略图
-func GetThumbnailImage(file string) string {
+func GetThumbnailImage(file string) (string, error) {
 	src, err := imaging.Open(file)
 	if err != nil {
 		fmt.Printf("failed to open image: %v\n", err)
+		return "", err
 	}
 
 	// 生成缩略图
@@ -26,9 +27,9 @@ func GetThumbnailImage(file string) string {
 	err = imaging.Save(dst, replaceName)
 	if err != nil {
 		fmt.Printf("failed to save image: %v\n", err)
-		return ""
+		return "", err
 	}
 
 	// 返回缩略图地址
-	return "thumbnail_" + fileName
+	return "thumbnail_" + fileName, nil
 }

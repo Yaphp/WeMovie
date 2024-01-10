@@ -5,7 +5,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	"wemovie/app/utils"
+	"weapp/app/utils"
 )
 
 var Db *gorm.DB

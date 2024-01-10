@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"wemovie/app/config"
+	"weapp/app/config"
 )
 
 func ReadSettingsFromFile(settingFilePath string) (config config.Config) {

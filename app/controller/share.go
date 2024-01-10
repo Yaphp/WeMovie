@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"strings"
 	"time"
-	"wemovie/app/model"
-	"wemovie/app/utils"
+	"weapp/app/model"
+	"weapp/app/utils"
 )
 
 type ShareController struct {
