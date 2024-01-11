@@ -117,7 +117,7 @@ func (con UploadController) Chunk(c *gin.Context) {
 		file.Name = name
 		file.Type = c.PostForm("type")
 		file.Size = utils.StrToFloat64(c.PostForm("size"))
-		file.Path = strings.Split(path, "/dist")[1]
+		file.Path = strings.Split(path, "weapp")[1]
 		file.CreatedAt = model.LocalTime(utils.GetDateTime())
 		file.UpdatedAt = model.LocalTime(utils.GetDateTime())
 
